@@ -28,13 +28,17 @@ public final class ItemTaskBinding implements ViewBinding {
   public final Chip chipPriority;
 
   @NonNull
+  public final TextView txtDueDate;
+
+  @NonNull
   public final TextView txtTitle;
 
   private ItemTaskBinding(@NonNull ConstraintLayout rootView, @NonNull CheckBox checkDone,
-      @NonNull Chip chipPriority, @NonNull TextView txtTitle) {
+      @NonNull Chip chipPriority, @NonNull TextView txtDueDate, @NonNull TextView txtTitle) {
     this.rootView = rootView;
     this.checkDone = checkDone;
     this.chipPriority = chipPriority;
+    this.txtDueDate = txtDueDate;
     this.txtTitle = txtTitle;
   }
 
@@ -77,13 +81,20 @@ public final class ItemTaskBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.txtDueDate;
+      TextView txtDueDate = ViewBindings.findChildViewById(rootView, id);
+      if (txtDueDate == null) {
+        break missingId;
+      }
+
       id = R.id.txtTitle;
       TextView txtTitle = ViewBindings.findChildViewById(rootView, id);
       if (txtTitle == null) {
         break missingId;
       }
 
-      return new ItemTaskBinding((ConstraintLayout) rootView, checkDone, chipPriority, txtTitle);
+      return new ItemTaskBinding((ConstraintLayout) rootView, checkDone, chipPriority, txtDueDate,
+          txtTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -10,7 +10,7 @@ import com.example.todo.model.Task
 
 @Database(
     entities = [Task::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(PriorityConverter::class)

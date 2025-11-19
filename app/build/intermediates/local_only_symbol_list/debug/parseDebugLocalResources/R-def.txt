@@ -10,6 +10,7 @@ id edtTitle
 id fabAdd
 id recycler
 id spnPriority
+id txtDueDate
 id txtTitle
 layout activity_main
 layout dialog_add_task

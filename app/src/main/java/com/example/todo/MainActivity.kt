@@ -20,6 +20,12 @@ import com.example.todo.ui.TaskViewModel
 import com.example.todo.ui.TaskViewModelFactory
 import androidx.core.widget.addTextChangedListener
 import com.example.todo.model.Task
+import android.app.DatePickerDialog
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import android.app.TimePickerDialog
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -81,25 +87,63 @@ class MainActivity : AppCompatActivity() {
         adapter.submitList(filtered)
     }
 
-
     private fun showAddDialog() {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
+
         dialogBinding.spnPriority.adapter = ArrayAdapter.createFromResource(
             this, R.array.priorities, android.R.layout.simple_spinner_dropdown_item
         )
+
+        // Store selected date+time here (millis)
+        val calendar = Calendar.getInstance()
+        var selectedDueDate: Long? = null
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
+        dialogBinding.txtDueDate.setOnClickListener {
+            // 1) Pick DATE first
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(this, { _, y, m, d ->
+                calendar.set(Calendar.YEAR, y)
+                calendar.set(Calendar.MONTH, m)
+                calendar.set(Calendar.DAY_OF_MONTH, d)
+
+                // 2) Then pick TIME
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+
+                TimePickerDialog(this, { _, h, min ->
+                    calendar.set(Calendar.HOUR_OF_DAY, h)
+                    calendar.set(Calendar.MINUTE, min)
+                    calendar.set(Calendar.SECOND, 0)
+                    calendar.set(Calendar.MILLISECOND, 0)
+
+                    selectedDueDate = calendar.timeInMillis
+                    dialogBinding.txtDueDate.text = "Due: ${formatter.format(calendar.time)}"
+                }, hour, minute, true).show()
+
+            }, year, month, day).show()
+        }
+
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.new_task))
             .setView(dialogBinding.root)
             .setPositiveButton(getString(R.string.add_task)) { _, _ ->
                 val title = dialogBinding.edtTitle.text?.toString()?.trim().orEmpty()
-                val prio = when(dialogBinding.spnPriority.selectedItem.toString()) {
+                val prio = when (dialogBinding.spnPriority.selectedItem.toString()) {
                     "HIGH" -> Priority.HIGH
                     "LOW" -> Priority.LOW
                     else -> Priority.MEDIUM
                 }
-                if (title.isNotEmpty()) vm.addTask(title, prio)
+                if (title.isNotEmpty()) {
+                    vm.addTask(title, prio, selectedDueDate)
+                }
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
+
+
 }

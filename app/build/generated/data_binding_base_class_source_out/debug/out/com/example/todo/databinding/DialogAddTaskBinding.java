@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
@@ -26,11 +27,15 @@ public final class DialogAddTaskBinding implements ViewBinding {
   @NonNull
   public final Spinner spnPriority;
 
+  @NonNull
+  public final TextView txtDueDate;
+
   private DialogAddTaskBinding(@NonNull LinearLayout rootView, @NonNull EditText edtTitle,
-      @NonNull Spinner spnPriority) {
+      @NonNull Spinner spnPriority, @NonNull TextView txtDueDate) {
     this.rootView = rootView;
     this.edtTitle = edtTitle;
     this.spnPriority = spnPriority;
+    this.txtDueDate = txtDueDate;
   }
 
   @Override
@@ -72,7 +77,13 @@ public final class DialogAddTaskBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogAddTaskBinding((LinearLayout) rootView, edtTitle, spnPriority);
+      id = R.id.txtDueDate;
+      TextView txtDueDate = ViewBindings.findChildViewById(rootView, id);
+      if (txtDueDate == null) {
+        break missingId;
+      }
+
+      return new DialogAddTaskBinding((LinearLayout) rootView, edtTitle, spnPriority, txtDueDate);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

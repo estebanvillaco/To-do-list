@@ -12,4 +12,17 @@
         android:id="@+id/spnPriority"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:entries="@array/priorities"/>
+
+    <TextView
+        android:id="@+id/txtDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No due date"
+        android:textSize="14sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:drawableStart="@android:drawable/ic_menu_today"
+        android:drawablePadding="8dp" />
+
+
 </LinearLayout>

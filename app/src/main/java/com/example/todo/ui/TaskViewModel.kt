@@ -22,11 +22,12 @@ class TaskViewModel(
         )
 
     // CREATE
-    fun addTask(title: String, prio: Priority) {
+    fun addTask(title: String, prio: Priority, dueDate: Long?) {
         viewModelScope.launch {
-            repository.addTask(title, prio)
+            repository.addTask(title, prio, dueDate)
         }
     }
+
 
     // UPDATE
     fun toggleDone(id: String) {

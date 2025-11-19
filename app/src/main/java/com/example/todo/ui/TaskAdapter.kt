@@ -8,10 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todo.databinding.ItemTaskBinding
 import com.example.todo.model.Priority
 import com.example.todo.model.Task
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TaskAdapter(
     private val onToggle: (String) -> Unit
 ) : ListAdapter<Task, TaskAdapter.TaskVH>(DIFF) {
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Task>() {
@@ -30,26 +34,27 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: TaskVH, position: Int) {
         val item = getItem(position)
 
-        // 1. Remove old listener to avoid triggering old callbacks
-        holder.b.checkDone.setOnCheckedChangeListener(null)
-
-        // 2. Bind current state
-        holder.b.checkDone.isChecked = item.done
         holder.b.txtTitle.text = item.title
 
-        // 3. Set new listener
+        // checkbox fix
+        holder.b.checkDone.setOnCheckedChangeListener(null)
+        holder.b.checkDone.isChecked = item.done
         holder.b.checkDone.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked != item.done) {       // avoid duplicate triggers
-                onToggle(item.id)
-            }
+            if (isChecked != item.done) onToggle(item.id)
         }
 
-        // 4. Bind priority chip
+        // Priority
         holder.b.chipPriority.text = when (item.priority) {
             Priority.HIGH -> "HIGH"
             Priority.MEDIUM -> "MED"
             Priority.LOW -> "LOW"
         }
+
+        // Due date
+        holder.b.txtDueDate.text =
+            item.dueDate?.let { "Due: ${dateFormatter.format(Date(it))}" }
+                ?: "No due date"
     }
+
 
 }

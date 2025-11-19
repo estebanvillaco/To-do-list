@@ -12,11 +12,11 @@ class TaskRepository(private val dao: TaskDao) {
     val tasks: Flow<List<Task>> = dao.getAllTasks()
 
     // CREATE
-    suspend fun addTask(title: String, priority: Priority) {
-        // new tasks go at the end; position = size is handled by caller later if you want
-        val task = Task(title = title, priority = priority)
+    suspend fun addTask(title: String, priority: Priority, dueDate: Long?) {
+        val task = Task(title = title, priority = priority, dueDate = dueDate)
         dao.insert(task)
     }
+
 
     // UPDATE: toggle done
     suspend fun toggleDone(id: String) {

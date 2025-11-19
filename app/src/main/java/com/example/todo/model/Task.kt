@@ -1,4 +1,3 @@
-// com/example/todo/model/Task.kt
 package com.example.todo.model
 
 import androidx.room.Entity
@@ -11,5 +10,6 @@ data class Task(
     val title: String,
     val priority: Priority,
     val done: Boolean = false,
-    var order: Int = 0
+    var order: Int = 0,
+    val dueDate: Long? = null    // 👈 NEW
 )

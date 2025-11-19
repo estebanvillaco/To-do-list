@@ -15,6 +15,7 @@ import com.example.todo.model.PriorityConverter;
 import com.example.todo.model.Task;
 import java.lang.Class;
 import java.lang.Exception;
+import java.lang.Long;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -47,7 +48,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `tasks` (`id`,`title`,`priority`,`done`,`order`) VALUES (?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `tasks` (`id`,`title`,`priority`,`done`,`order`,`dueDate`) VALUES (?,?,?,?,?,?)";
       }
 
       @Override
@@ -72,6 +73,11 @@ public final class TaskDao_Impl implements TaskDao {
         final int _tmp_1 = entity.getDone() ? 1 : 0;
         statement.bindLong(4, _tmp_1);
         statement.bindLong(5, entity.getOrder());
+        if (entity.getDueDate() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindLong(6, entity.getDueDate());
+        }
       }
     };
     this.__deletionAdapterOfTask = new EntityDeletionOrUpdateAdapter<Task>(__db) {
@@ -95,7 +101,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `tasks` SET `id` = ?,`title` = ?,`priority` = ?,`done` = ?,`order` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `tasks` SET `id` = ?,`title` = ?,`priority` = ?,`done` = ?,`order` = ?,`dueDate` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -120,17 +126,22 @@ public final class TaskDao_Impl implements TaskDao {
         final int _tmp_1 = entity.getDone() ? 1 : 0;
         statement.bindLong(4, _tmp_1);
         statement.bindLong(5, entity.getOrder());
-        if (entity.getId() == null) {
+        if (entity.getDueDate() == null) {
           statement.bindNull(6);
         } else {
-          statement.bindString(6, entity.getId());
+          statement.bindLong(6, entity.getDueDate());
+        }
+        if (entity.getId() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindString(7, entity.getId());
         }
       }
     };
   }
 
   @Override
-  public Object insert(final Task task, final Continuation<? super Unit> arg1) {
+  public Object insert(final Task task, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -144,11 +155,11 @@ public final class TaskDao_Impl implements TaskDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object delete(final Task task, final Continuation<? super Unit> arg1) {
+  public Object delete(final Task task, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -162,11 +173,11 @@ public final class TaskDao_Impl implements TaskDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object update(final Task task, final Continuation<? super Unit> arg1) {
+  public Object update(final Task task, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -180,11 +191,11 @@ public final class TaskDao_Impl implements TaskDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateTasks(final List<Task> tasks, final Continuation<? super Unit> arg1) {
+  public Object updateTasks(final List<Task> tasks, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -198,7 +209,7 @@ public final class TaskDao_Impl implements TaskDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -216,6 +227,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfPriority = CursorUtil.getColumnIndexOrThrow(_cursor, "priority");
           final int _cursorIndexOfDone = CursorUtil.getColumnIndexOrThrow(_cursor, "done");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
+          final int _cursorIndexOfDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "dueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -245,7 +257,13 @@ public final class TaskDao_Impl implements TaskDao {
             _tmpDone = _tmp_1 != 0;
             final int _tmpOrder;
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
-            _item = new Task(_tmpId,_tmpTitle,_tmpPriority,_tmpDone,_tmpOrder);
+            final Long _tmpDueDate;
+            if (_cursor.isNull(_cursorIndexOfDueDate)) {
+              _tmpDueDate = null;
+            } else {
+              _tmpDueDate = _cursor.getLong(_cursorIndexOfDueDate);
+            }
+            _item = new Task(_tmpId,_tmpTitle,_tmpPriority,_tmpDone,_tmpOrder,_tmpDueDate);
             _result.add(_item);
           }
           return _result;
