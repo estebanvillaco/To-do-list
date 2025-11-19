@@ -8,11 +8,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.todo.R;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -20,7 +21,7 @@ import java.lang.String;
 
 public final class ActivityMainBinding implements ViewBinding {
   @NonNull
-  private final CoordinatorLayout rootView;
+  private final ConstraintLayout rootView;
 
   @NonNull
   public final LinearLayout content;
@@ -34,19 +35,23 @@ public final class ActivityMainBinding implements ViewBinding {
   @NonNull
   public final RecyclerView recycler;
 
-  private ActivityMainBinding(@NonNull CoordinatorLayout rootView, @NonNull LinearLayout content,
+  @NonNull
+  public final MaterialToolbar topAppBar;
+
+  private ActivityMainBinding(@NonNull ConstraintLayout rootView, @NonNull LinearLayout content,
       @NonNull EditText edtSearch, @NonNull FloatingActionButton fabAdd,
-      @NonNull RecyclerView recycler) {
+      @NonNull RecyclerView recycler, @NonNull MaterialToolbar topAppBar) {
     this.rootView = rootView;
     this.content = content;
     this.edtSearch = edtSearch;
     this.fabAdd = fabAdd;
     this.recycler = recycler;
+    this.topAppBar = topAppBar;
   }
 
   @Override
   @NonNull
-  public CoordinatorLayout getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -95,8 +100,14 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((CoordinatorLayout) rootView, content, edtSearch, fabAdd,
-          recycler);
+      id = R.id.topAppBar;
+      MaterialToolbar topAppBar = ViewBindings.findChildViewById(rootView, id);
+      if (topAppBar == null) {
+        break missingId;
+      }
+
+      return new ActivityMainBinding((ConstraintLayout) rootView, content, edtSearch, fabAdd,
+          recycler, topAppBar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

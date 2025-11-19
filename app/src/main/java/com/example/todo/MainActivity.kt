@@ -1,40 +1,51 @@
 package com.example.todo
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import com.example.todo.databinding.ActivityMainBinding
 import com.example.todo.databinding.DialogAddTaskBinding
 import com.example.todo.model.Priority
+import com.example.todo.model.Task
 import com.example.todo.ui.TaskAdapter
 import com.example.todo.ui.TaskViewModel
 import com.example.todo.ui.TaskViewModelFactory
-import androidx.core.widget.addTextChangedListener
-import com.example.todo.model.Task
-import android.app.DatePickerDialog
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import android.app.TimePickerDialog
-
+import android.widget.ArrayAdapter
 
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var b: ActivityMainBinding
     private val vm: TaskViewModel by viewModels {
         TaskViewModelFactory(application)
     }
+
     private var allTasks: List<Task> = emptyList()
     private var currentQuery: String = ""
+
+    // 🔽 Sorting state
+    private enum class SortMode {
+        BY_ORDER,
+        PRIORITY_HIGH_FIRST,
+        DUE_SOONEST_FIRST,
+        DUE_LATEST_FIRST
+    }
+
+    private var currentSort: SortMode = SortMode.BY_ORDER
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,17 +55,36 @@ class MainActivity : AppCompatActivity() {
         val adapter = TaskAdapter(onToggle = vm::toggleDone)
         b.recycler.layoutManager = LinearLayoutManager(this)
         b.recycler.adapter = adapter
+
+        // Search
         b.edtSearch.addTextChangedListener { text ->
             currentQuery = text?.toString().orEmpty()
-            applyFilter(adapter)
+            applyFilterAndSort(adapter)
         }
 
+        // 🔽 Toolbar menu handling
+        b.topAppBar.inflateMenu(R.menu.main_menu)
+        b.topAppBar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_sort_order -> currentSort = SortMode.BY_ORDER
+                R.id.action_sort_priority_high -> currentSort = SortMode.PRIORITY_HIGH_FIRST
+                R.id.action_sort_due_soon -> currentSort = SortMode.DUE_SOONEST_FIRST
+                R.id.action_sort_due_latest -> currentSort = SortMode.DUE_LATEST_FIRST
+                else -> return@setOnMenuItemClickListener false
+            }
+            applyFilterAndSort(adapter)
+            true
+        }
 
         val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.START or ItemTouchHelper.END
         ) {
-            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                rv: RecyclerView,
+                vh: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 vm.move(vh.bindingAdapterPosition, target.bindingAdapterPosition)
                 return true
             }
@@ -71,20 +101,45 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             vm.tasks.collectLatest { tasks ->
                 allTasks = tasks
-                applyFilter(adapter)
+                applyFilterAndSort(adapter)
             }
         }
 
         b.fabAdd.setOnClickListener { showAddDialog() }
     }
-    private fun applyFilter(adapter: TaskAdapter) {
-        val filtered = if (currentQuery.isBlank()) {
+
+    // 🔽 Filter by search + apply chosen sorting
+    private fun applyFilterAndSort(adapter: TaskAdapter) {
+        // 1) Search filter
+        var list = if (currentQuery.isBlank()) {
             allTasks
         } else {
             val q = currentQuery.lowercase()
             allTasks.filter { it.title.lowercase().contains(q) }
         }
-        adapter.submitList(filtered)
+
+        // 2) Sort
+        list = when (currentSort) {
+            SortMode.BY_ORDER ->
+                list.sortedBy { it.order }
+
+            SortMode.PRIORITY_HIGH_FIRST ->
+                list.sortedBy { it.priority.ordinal } // assuming enum = HIGH, MEDIUM, LOW
+
+            SortMode.DUE_SOONEST_FIRST ->
+                list.sortedWith(
+                    compareBy<Task> { it.dueDate == null }
+                        .thenBy { it.dueDate ?: Long.MAX_VALUE }
+                )
+
+            SortMode.DUE_LATEST_FIRST ->
+                list.sortedWith(
+                    compareBy<Task> { it.dueDate == null }
+                        .thenByDescending { it.dueDate ?: Long.MIN_VALUE }
+                )
+        }
+
+        adapter.submitList(list)
     }
 
     private fun showAddDialog() {
@@ -94,23 +149,22 @@ class MainActivity : AppCompatActivity() {
             this, R.array.priorities, android.R.layout.simple_spinner_dropdown_item
         )
 
-        // Store selected date+time here (millis)
         val calendar = Calendar.getInstance()
         var selectedDueDate: Long? = null
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
         dialogBinding.txtDueDate.setOnClickListener {
-            // 1) Pick DATE first
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+            // Date first
             DatePickerDialog(this, { _, y, m, d ->
                 calendar.set(Calendar.YEAR, y)
                 calendar.set(Calendar.MONTH, m)
                 calendar.set(Calendar.DAY_OF_MONTH, d)
 
-                // 2) Then pick TIME
+                // Then time
                 val hour = calendar.get(Calendar.HOUR_OF_DAY)
                 val minute = calendar.get(Calendar.MINUTE)
 
@@ -144,6 +198,4 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
-
 }

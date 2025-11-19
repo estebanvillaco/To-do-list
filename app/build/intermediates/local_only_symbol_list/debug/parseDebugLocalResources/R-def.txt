@@ -2,6 +2,10 @@ R_DEF: Internal format may change without notice
 local
 array priorities
 drawable ic_add_24
+id action_sort_due_latest
+id action_sort_due_soon
+id action_sort_order
+id action_sort_priority_high
 id checkDone
 id chipPriority
 id content
@@ -10,11 +14,13 @@ id edtTitle
 id fabAdd
 id recycler
 id spnPriority
+id topAppBar
 id txtDueDate
 id txtTitle
 layout activity_main
 layout dialog_add_task
 layout item_task
+menu main_menu
 string add
 string add_task
 string app_name
