@@ -177,7 +177,7 @@ public final class TaskDao_Impl implements TaskDao {
   }
 
   @Override
-  public Object update(final Task task, final Continuation<? super Unit> $completion) {
+  public Object updateTask(final Task task, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull

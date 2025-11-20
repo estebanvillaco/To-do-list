@@ -11,5 +11,5 @@ data class Task(
     val priority: Priority,
     val done: Boolean = false,
     var order: Int = 0,
-    val dueDate: Long? = null    // 👈 NEW
+    var dueDate: Long? = null    // 👈 NEW
 )

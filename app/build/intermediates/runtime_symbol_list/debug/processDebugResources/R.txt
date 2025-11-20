@@ -3281,6 +3281,8 @@ int id endToStart 0x7f0900b8
 int id enterAlways 0x7f0900b9
 int id enterAlwaysCollapsed 0x7f0900ba
 int id escape 0x7f0900bb
+int id etTaskDescription 0x7f090204
+int id etTaskTitle 0x7f090205
 int id exitUntilCollapsed 0x7f0900bc
 int id expand_activities_button 0x7f0900bd
 int id expanded_menu 0x7f0900be
@@ -3512,6 +3514,7 @@ int id snapMargins 0x7f09019f
 int id south 0x7f0901a0
 int id spacer 0x7f0901a1
 int id special_effects_controller_view_tag 0x7f0901a2
+int id spinnerPriority 0x7f090206
 int id spline 0x7f0901a3
 int id split_action_bar 0x7f0901a4
 int id spnPriority 0x7f0901a5
@@ -3741,6 +3744,7 @@ int layout design_navigation_menu_item 0x7f0c002a
 int layout design_text_input_end_icon 0x7f0c002b
 int layout design_text_input_start_icon 0x7f0c002c
 int layout dialog_add_task 0x7f0c002d
+int layout dialog_edit_task 0x7f0c006e
 int layout ime_base_split_test_activity 0x7f0c002e
 int layout ime_secondary_split_test_activity 0x7f0c002f
 int layout item_task 0x7f0c0030

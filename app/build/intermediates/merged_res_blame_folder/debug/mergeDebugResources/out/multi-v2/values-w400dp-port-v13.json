@@ -4,7 +4,7 @@
             "outputFile": "com.example.todo.app-mergeDebugResources-39:/values-w400dp-port-v13/values-w400dp-port-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Jonas\\.gradle\\caches\\8.13\\transforms\\3dd21ab5fab287478fbef671c087b9f9\\transformed\\material-1.12.0\\res\\values-w400dp-port-v13\\values-w400dp-port-v13.xml",
+                    "source": "/Users/estebanvillacorta/.gradle/caches/8.13/transforms/3dd21ab5fab287478fbef671c087b9f9/transformed/material-1.12.0/res/values-w400dp-port-v13/values-w400dp-port-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

@@ -15,11 +15,11 @@ interface TaskDao {
     @Insert
     suspend fun insert(task: Task)
 
-    // UPDATE single
+    // UPDATE single task
     @Update
-    suspend fun update(task: Task)
+    suspend fun updateTask(task: Task)
 
-    // UPDATE many (for reordering)
+    // UPDATE multiple tasks (for reordering)
     @Update
     suspend fun updateTasks(tasks: List<Task>)
 

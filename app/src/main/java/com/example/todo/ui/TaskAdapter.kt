@@ -13,14 +13,23 @@ import java.util.Date
 import java.util.Locale
 
 class TaskAdapter(
-    private val onToggle: (String) -> Unit
+    private val onToggle: (String) -> Unit,
+    private val onEdit: (Task) -> Unit
 ) : ListAdapter<Task, TaskAdapter.TaskVH>(DIFF) {
+
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Task>() {
-            override fun areItemsTheSame(oldItem: Task, newItem: Task) = oldItem.id == newItem.id
-            override fun areContentsTheSame(oldItem: Task, newItem: Task) = oldItem == newItem
+            override fun areItemsTheSame(oldItem: Task, newItem: Task) =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Task, newItem: Task) =
+                oldItem.title == newItem.title &&
+                        oldItem.priority == newItem.priority &&
+                        oldItem.done == newItem.done &&
+                        oldItem.order == newItem.order &&
+                        oldItem.dueDate == newItem.dueDate
         }
     }
 
@@ -36,12 +45,15 @@ class TaskAdapter(
 
         holder.b.txtTitle.text = item.title
 
-        // checkbox fix
+        // Checkbox toggle
         holder.b.checkDone.setOnCheckedChangeListener(null)
         holder.b.checkDone.isChecked = item.done
         holder.b.checkDone.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked != item.done) onToggle(item.id)
         }
+
+        // Click to edit
+        holder.itemView.setOnClickListener { onEdit(item) }
 
         // Priority
         holder.b.chipPriority.text = when (item.priority) {
@@ -52,9 +64,6 @@ class TaskAdapter(
 
         // Due date
         holder.b.txtDueDate.text =
-            item.dueDate?.let { "Due: ${dateFormatter.format(Date(it))}" }
-                ?: "No due date"
+            item.dueDate?.let { "Due: ${dateFormatter.format(Date(it))}" } ?: "No due date"
     }
-
-
 }

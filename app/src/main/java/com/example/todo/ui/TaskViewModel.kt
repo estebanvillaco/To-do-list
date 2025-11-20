@@ -1,52 +1,36 @@
-// com/example/todo/ui/TaskViewModel.kt
 package com.example.todo.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.data.TaskRepository
 import com.example.todo.model.Priority
+import com.example.todo.model.Task
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TaskViewModel(
-    private val repository: TaskRepository
-) : ViewModel() {
+class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    // READ: expose tasks from DB as StateFlow
     val tasks = repository.tasks
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // CREATE
-    fun addTask(title: String, prio: Priority, dueDate: Long?) {
-        viewModelScope.launch {
-            repository.addTask(title, prio, dueDate)
-        }
+    fun addTask(title: String, prio: Priority, dueDate: Long?) = viewModelScope.launch {
+        repository.addTask(title, prio, dueDate)
     }
 
-
-    // UPDATE
-    fun toggleDone(id: String) {
-        viewModelScope.launch {
-            repository.toggleDone(id)
-        }
+    fun updateTask(task: Task) = viewModelScope.launch {
+        repository.updateTask(task)
     }
 
-    // DELETE
-    fun deleteAt(position: Int) {
-        viewModelScope.launch {
-            repository.deleteAt(position)
-        }
+    fun toggleDone(id: String) = viewModelScope.launch {
+        repository.toggleDone(id)
     }
 
-    // MOVE
-    fun move(from: Int, to: Int) {
-        viewModelScope.launch {
-            repository.move(from, to)
-        }
+    fun deleteAt(position: Int) = viewModelScope.launch {
+        repository.deleteAt(position)
+    }
+
+    fun move(from: Int, to: Int) = viewModelScope.launch {
+        repository.move(from, to)
     }
 }

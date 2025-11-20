@@ -2,14 +2,12 @@ package com.example.todo.data
 
 import com.example.todo.model.Priority
 import com.example.todo.model.Task
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-
 
 class TaskRepository(private val dao: TaskDao) {
 
     // READ
-    val tasks: Flow<List<Task>> = dao.getAllTasks()
+    val tasks = dao.getAllTasks()
 
     // CREATE
     suspend fun addTask(title: String, priority: Priority, dueDate: Long?) {
@@ -17,15 +15,19 @@ class TaskRepository(private val dao: TaskDao) {
         dao.insert(task)
     }
 
+    // UPDATE single task
+    suspend fun updateTask(task: Task) {
+        dao.updateTask(task)
+    }
 
-    // UPDATE: toggle done
+    // TOGGLE done
     suspend fun toggleDone(id: String) {
         val currentList = dao.getAllTasks().firstOrNull() ?: return
         val task = currentList.find { it.id == id } ?: return
-        dao.update(task.copy(done = !task.done))
+        dao.updateTask(task.copy(done = !task.done))
     }
 
-    // DELETE
+    // DELETE at position
     suspend fun deleteAt(position: Int) {
         val currentList = dao.getAllTasks().firstOrNull() ?: return
         if (position !in currentList.indices) return

@@ -3282,6 +3282,8 @@ id endToStart
 id enterAlways
 id enterAlwaysCollapsed
 id escape
+id etTaskDescription
+id etTaskTitle
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3513,6 +3515,7 @@ id snapMargins
 id south
 id spacer
 id special_effects_controller_view_tag
+id spinnerPriority
 id spline
 id split_action_bar
 id spnPriority
@@ -3742,6 +3745,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_add_task
+layout dialog_edit_task
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_task
